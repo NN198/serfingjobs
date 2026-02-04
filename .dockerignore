@@ -1,0 +1,14 @@
+node_modules
+frontend/node_modules
+frontend/dist
+.git
+.gitignore
+*.md
+.env
+.env.local
+.env.*.local
+data/*.db
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db

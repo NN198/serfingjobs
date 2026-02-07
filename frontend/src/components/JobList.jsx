@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 const STATUS_COLORS = {
   open: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
@@ -25,37 +25,37 @@ function JobCard({ job, onStatusChange, onDelete }) {
   const [isExpanded, setIsExpanded] = useState(false)
 
   return (
-    <div className="bg-slate-900/60 backdrop-blur-xl rounded-xl border border-slate-800/50 p-5 hover:border-slate-700/50 transition-all">
-      <div className="flex items-start justify-between gap-4">
+    <div className="bg-slate-900/60 backdrop-blur-xl rounded-lg sm:rounded-xl border border-slate-800/50 p-3 sm:p-5 hover:border-slate-700/50 transition-all">
+      <div className="flex items-start justify-between gap-2 sm:gap-4">
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-2">
+          <div className="flex items-center gap-2 mb-1.5 sm:mb-2">
             <span
-              className="w-2 h-2 rounded-full"
+              className="w-2 h-2 rounded-full flex-shrink-0"
               style={{ backgroundColor: SOURCE_COLORS[job.source] || SOURCE_COLORS.other }}
             />
-            <span className="text-xs text-slate-500 uppercase tracking-wider">
+            <span className="text-[10px] sm:text-xs text-slate-500 uppercase tracking-wider">
               {job.source}
             </span>
           </div>
 
-          <h3 className="text-white font-medium truncate mb-1">
+          <h3 className="text-white font-medium text-sm sm:text-base leading-snug mb-1">
             <a
               href={job.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-violet-400 transition-colors"
+              className="hover:text-violet-400 transition-colors line-clamp-2 sm:truncate"
             >
               {job.title}
             </a>
           </h3>
 
           {job.company && (
-            <p className="text-slate-400 text-sm mb-2">{job.company}</p>
+            <p className="text-slate-400 text-xs sm:text-sm mb-1.5 sm:mb-2">{job.company}</p>
           )}
 
           {job.location && (
-            <p className="text-slate-500 text-xs flex items-center gap-1">
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <p className="text-slate-500 text-[11px] sm:text-xs flex items-center gap-1">
+              <svg className="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
@@ -64,11 +64,11 @@ function JobCard({ job, onStatusChange, onDelete }) {
           )}
         </div>
 
-        <div className="flex flex-col items-end gap-2">
+        <div className="flex flex-col items-end gap-1.5 sm:gap-2 flex-shrink-0">
           <select
             value={job.status}
             onChange={(e) => onStatusChange(job.id, e.target.value)}
-            className={`text-xs px-2 py-1 rounded-lg border ${STATUS_COLORS[job.status]} bg-transparent cursor-pointer focus:outline-none focus:ring-2 focus:ring-violet-500/50`}
+            className={`text-[11px] sm:text-xs px-1.5 sm:px-2 py-1 rounded-lg border ${STATUS_COLORS[job.status]} bg-transparent cursor-pointer focus:outline-none focus:ring-2 focus:ring-violet-500/50`}
           >
             <option value="open">Open</option>
             <option value="applied">Applied</option>
@@ -90,9 +90,9 @@ function JobCard({ job, onStatusChange, onDelete }) {
       </div>
 
       {job.matched_skills?.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 mt-3">
+        <div className="flex flex-wrap gap-1 sm:gap-1.5 mt-2 sm:mt-3">
           {job.matched_skills.map(skill => (
-            <span key={skill} className="text-xs px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-400 border border-violet-500/20">
+            <span key={skill} className="text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-400 border border-violet-500/20">
               {skill}
             </span>
           ))}
@@ -100,7 +100,7 @@ function JobCard({ job, onStatusChange, onDelete }) {
       )}
 
       {job.description && (
-        <div className="mt-3">
+        <div className="mt-2 sm:mt-3">
           <button
             onClick={() => setIsExpanded(!isExpanded)}
             className="text-xs text-slate-500 hover:text-slate-400 transition-colors flex items-center gap-1"
@@ -111,7 +111,7 @@ function JobCard({ job, onStatusChange, onDelete }) {
             {isExpanded ? 'Hide' : 'Show'} description
           </button>
           {isExpanded && (
-            <p className="text-slate-400 text-sm mt-2 leading-relaxed">
+            <p className="text-slate-400 text-xs sm:text-sm mt-2 leading-relaxed">
               {job.description}
             </p>
           )}
@@ -121,7 +121,33 @@ function JobCard({ job, onStatusChange, onDelete }) {
   )
 }
 
+const ITEMS_PER_PAGE = 10
+const SM_BREAKPOINT = 640 // matches Tailwind's sm
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== 'undefined' ? window.innerWidth < SM_BREAKPOINT : false
+  )
+
+  useEffect(() => {
+    const mq = window.matchMedia(`(max-width: ${SM_BREAKPOINT - 1}px)`)
+    const handler = (e) => setIsMobile(e.matches)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
+
+  return isMobile
+}
+
 export default function JobList({ jobs, loading, onStatusChange, onDelete }) {
+  const [currentPage, setCurrentPage] = useState(1)
+  const isMobile = useIsMobile()
+
+  // Reset to page 1 when jobs change (new search)
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [jobs])
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16">
@@ -144,16 +170,42 @@ export default function JobList({ jobs, loading, onStatusChange, onDelete }) {
     )
   }
 
+  // Mobile: show all jobs, Desktop: paginate
+  const totalPages = Math.ceil(jobs.length / ITEMS_PER_PAGE)
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
+  const endIndex = startIndex + ITEMS_PER_PAGE
+  const visibleJobs = isMobile ? jobs : jobs.slice(startIndex, endIndex)
+
+  // Generate page numbers to show
+  const getPageNumbers = () => {
+    const pages = []
+    const maxVisible = 5
+    let start = Math.max(1, currentPage - Math.floor(maxVisible / 2))
+    let end = Math.min(totalPages, start + maxVisible - 1)
+    if (end - start + 1 < maxVisible) {
+      start = Math.max(1, end - maxVisible + 1)
+    }
+    for (let i = start; i <= end; i++) {
+      pages.push(i)
+    }
+    return pages
+  }
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-slate-400 text-sm font-medium">
+        <h2 className="text-slate-400 text-xs sm:text-sm font-medium">
           {jobs.length} {jobs.length === 1 ? 'result' : 'results'}
+          {!isMobile && totalPages > 1 && (
+            <span className="text-slate-500 ml-2">
+              (showing {startIndex + 1}–{Math.min(endIndex, jobs.length)})
+            </span>
+          )}
         </h2>
       </div>
 
-      <div className="grid gap-4">
-        {jobs.map(job => (
+      <div className="grid gap-3 sm:gap-4">
+        {visibleJobs.map(job => (
           <JobCard
             key={job.id}
             job={job}
@@ -162,6 +214,88 @@ export default function JobList({ jobs, loading, onStatusChange, onDelete }) {
           />
         ))}
       </div>
+
+      {/* Pagination Controls - desktop only */}
+      {!isMobile && totalPages > 1 && (
+        <div className="flex items-center justify-center gap-1 pt-4 pb-2 flex-wrap">
+          {/* Previous */}
+          <button
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            className={`p-2 rounded-lg transition-all ${
+              currentPage === 1
+                ? 'text-slate-600 cursor-not-allowed'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800'
+            }`}
+            aria-label="Previous page"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+
+          {/* First page + ellipsis */}
+          {getPageNumbers()[0] > 1 && (
+            <>
+              <button
+                onClick={() => setCurrentPage(1)}
+                className="w-10 h-10 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-all"
+              >
+                1
+              </button>
+              {getPageNumbers()[0] > 2 && (
+                <span className="text-slate-600 px-1">...</span>
+              )}
+            </>
+          )}
+
+          {/* Page numbers */}
+          {getPageNumbers().map(page => (
+            <button
+              key={page}
+              onClick={() => setCurrentPage(page)}
+              className={`w-10 h-10 rounded-lg text-sm font-medium transition-all ${
+                page === currentPage
+                  ? 'bg-violet-600 text-white shadow-lg shadow-violet-500/25'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-800'
+              }`}
+            >
+              {page}
+            </button>
+          ))}
+
+          {/* Last page + ellipsis */}
+          {getPageNumbers()[getPageNumbers().length - 1] < totalPages && (
+            <>
+              {getPageNumbers()[getPageNumbers().length - 1] < totalPages - 1 && (
+                <span className="text-slate-600 px-1">...</span>
+              )}
+              <button
+                onClick={() => setCurrentPage(totalPages)}
+                className="w-10 h-10 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-all"
+              >
+                {totalPages}
+              </button>
+            </>
+          )}
+
+          {/* Next */}
+          <button
+            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages}
+            className={`p-2 rounded-lg transition-all ${
+              currentPage === totalPages
+                ? 'text-slate-600 cursor-not-allowed'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800'
+            }`}
+            aria-label="Next page"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+      )}
     </div>
   )
 }

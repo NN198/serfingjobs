@@ -2,6 +2,21 @@ import { useState, useEffect, useCallback } from 'react'
 
 const API_BASE = '/api'
 
+// Compute stats from the current jobs array
+function computeStats(jobs) {
+  if (!jobs || jobs.length === 0) return { total: 0, byStatus: {}, bySource: {} }
+
+  const byStatus = {}
+  const bySource = {}
+  for (const job of jobs) {
+    const s = job.status || 'open'
+    const src = job.source || 'other'
+    byStatus[s] = (byStatus[s] || 0) + 1
+    bySource[src] = (bySource[src] || 0) + 1
+  }
+  return { total: jobs.length, byStatus, bySource }
+}
+
 export default function useJobs() {
   const [jobs, setJobs] = useState([])
   const [loading, setLoading] = useState(false)
@@ -23,16 +38,10 @@ export default function useJobs() {
       .catch(err => console.error('Failed to fetch metadata:', err))
   }, [])
 
-  // Fetch stats
-  const fetchStats = useCallback(async () => {
-    try {
-      const res = await fetch(`${API_BASE}/stats`)
-      const data = await res.json()
-      setStats(data)
-    } catch (err) {
-      console.error('Failed to fetch stats:', err)
-    }
-  }, [])
+  // Recalculate stats whenever jobs change
+  useEffect(() => {
+    setStats(computeStats(jobs))
+  }, [jobs])
 
   // Fetch all jobs
   const fetchJobs = useCallback(async () => {
@@ -42,16 +51,16 @@ export default function useJobs() {
       const res = await fetch(`${API_BASE}/jobs`)
       const data = await res.json()
       setJobs(data)
-      await fetchStats()
     } catch (err) {
       setError(err.message)
     } finally {
       setLoading(false)
     }
-  }, [fetchStats])
+  }, [])
 
   // Search jobs
   const searchJobs = useCallback(async (params) => {
+    setJobs([])
     setLoading(true)
     setError(null)
     try {
@@ -63,7 +72,6 @@ export default function useJobs() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
       setJobs(data.jobs || [])
-      await fetchStats()
       return data
     } catch (err) {
       setError(err.message)
@@ -71,7 +79,7 @@ export default function useJobs() {
     } finally {
       setLoading(false)
     }
-  }, [fetchStats])
+  }, [])
 
   // Update job
   const updateJob = useCallback(async (id, updates) => {
@@ -83,24 +91,22 @@ export default function useJobs() {
       })
       const updated = await res.json()
       setJobs(prev => prev.map(job => job.id === id ? updated : job))
-      await fetchStats()
       return updated
     } catch (err) {
       setError(err.message)
       return null
     }
-  }, [fetchStats])
+  }, [])
 
   // Delete job
   const deleteJob = useCallback(async (id) => {
     try {
       await fetch(`${API_BASE}/jobs/${id}`, { method: 'DELETE' })
       setJobs(prev => prev.filter(job => job.id !== id))
-      await fetchStats()
     } catch (err) {
       setError(err.message)
     }
-  }, [fetchStats])
+  }, [])
 
   return {
     jobs,

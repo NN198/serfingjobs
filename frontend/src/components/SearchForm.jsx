@@ -77,11 +77,11 @@ export default function SearchForm({ sites, statuses, skillSuggestions, onSearch
   const isValid = selectedSites.length > 0 && roles.length > 0
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
       {/* Site Selection */}
       <div>
-        <div className="flex items-center justify-between mb-3">
-          <label className="text-sm font-medium text-slate-300">
+        <div className="flex items-center justify-between mb-2 sm:mb-3">
+          <label className="text-xs sm:text-sm font-medium text-slate-300">
             Job Sites
           </label>
           <button
@@ -92,11 +92,11 @@ export default function SearchForm({ sites, statuses, skillSuggestions, onSearch
             {selectedSites.length === sites.length ? 'Deselect All' : 'Select All'}
           </button>
         </div>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-1.5 sm:gap-2">
           {sites.map(site => (
-            <label 
+            <label
               key={site.id}
-              className={`flex items-center gap-2 p-2.5 rounded-lg cursor-pointer transition-all border ${
+              className={`flex items-center gap-1.5 sm:gap-2 p-2 sm:p-2.5 rounded-lg cursor-pointer transition-all border ${
                 selectedSites.includes(site.id)
                   ? 'bg-violet-500/10 border-violet-500/30 text-white'
                   : 'bg-slate-800/50 border-slate-700/50 text-slate-400 hover:bg-slate-800 hover:text-slate-300'
@@ -108,11 +108,11 @@ export default function SearchForm({ sites, statuses, skillSuggestions, onSearch
                 onChange={() => handleSiteToggle(site.id)}
                 className="sr-only"
               />
-              <div 
+              <div
                 className="w-2 h-2 rounded-full flex-shrink-0"
                 style={{ backgroundColor: site.color || '#6366F1' }}
               />
-              <span className="text-xs font-medium truncate">{site.name}</span>
+              <span className="text-[11px] sm:text-xs font-medium truncate">{site.name}</span>
             </label>
           ))}
         </div>
@@ -120,7 +120,7 @@ export default function SearchForm({ sites, statuses, skillSuggestions, onSearch
 
       {/* Role Input */}
       <div>
-        <label className="block text-sm font-medium text-slate-300 mb-3">
+        <label className="block text-xs sm:text-sm font-medium text-slate-300 mb-2 sm:mb-3">
           Job Roles <span className="text-slate-500 font-normal">(OR logic)</span>
         </label>
         <div className="flex gap-2">
@@ -129,7 +129,7 @@ export default function SearchForm({ sites, statuses, skillSuggestions, onSearch
             value={roleInput}
             onChange={(e) => setRoleInput(e.target.value)}
             placeholder="e.g., Software Engineer"
-            className="flex-1 px-3 py-2.5 bg-slate-800/50 border border-slate-700/50 rounded-lg text-sm text-white placeholder-slate-500 focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 transition-all"
+            className="flex-1 min-w-0 px-3 py-2 sm:py-2.5 bg-slate-800/50 border border-slate-700/50 rounded-lg text-sm text-white placeholder-slate-500 focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 transition-all"
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 e.preventDefault()
@@ -140,7 +140,7 @@ export default function SearchForm({ sites, statuses, skillSuggestions, onSearch
           <button
             type="button"
             onClick={handleAddRole}
-            className="px-4 py-2.5 bg-slate-800 text-slate-300 rounded-lg text-sm font-medium hover:bg-slate-700 transition-colors border border-slate-700/50"
+            className="px-3 sm:px-4 py-2 sm:py-2.5 bg-slate-800 text-slate-300 rounded-lg text-sm font-medium hover:bg-slate-700 transition-colors border border-slate-700/50 flex-shrink-0"
           >
             Add
           </button>
@@ -172,10 +172,10 @@ export default function SearchForm({ sites, statuses, skillSuggestions, onSearch
 
       {/* Status Selection */}
       <div>
-        <label className="block text-sm font-medium text-slate-300 mb-3">
+        <label className="block text-xs sm:text-sm font-medium text-slate-300 mb-2 sm:mb-3">
           Status Keywords
         </label>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-1.5 sm:gap-2">
           {statuses.map(status => (
             <button
               key={status}
@@ -329,7 +329,7 @@ export default function SearchForm({ sites, statuses, skillSuggestions, onSearch
       <button
         type="submit"
         disabled={!isValid || loading}
-        className={`w-full py-3.5 px-4 rounded-xl font-semibold text-white transition-all ${
+        className={`w-full py-3 sm:py-3.5 px-4 rounded-xl font-semibold text-white text-sm sm:text-base transition-all ${
           isValid && !loading
             ? 'bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 shadow-lg shadow-violet-500/25'
             : 'bg-slate-800 text-slate-500 cursor-not-allowed'

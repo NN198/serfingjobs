@@ -2,14 +2,14 @@ export default function StatsPanel({ stats }) {
   if (!stats || stats.total === 0) return null
 
   return (
-    <div className="flex items-center gap-6">
+    <div className="flex items-center gap-3 sm:gap-6">
       <div className="text-right">
-        <p className="text-2xl font-bold text-white">{stats.total}</p>
-        <p className="text-xs text-slate-400">Total Jobs</p>
+        <p className="text-xl sm:text-2xl font-bold text-white">{stats.total}</p>
+        <p className="text-[10px] sm:text-xs text-slate-400">Total Jobs</p>
       </div>
 
       {stats.byStatus && Object.keys(stats.byStatus).length > 0 && (
-        <div className="flex items-center gap-3 pl-6 border-l border-slate-800">
+        <div className="hidden sm:flex items-center gap-3 pl-6 border-l border-slate-800">
           {Object.entries(stats.byStatus).map(([status, count]) => (
             <div key={status} className="text-center">
               <p className="text-lg font-semibold text-slate-300">{count}</p>

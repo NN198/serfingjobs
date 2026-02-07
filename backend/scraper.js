@@ -176,42 +176,54 @@ export function buildSearchQuery({ sites, roles, statuses, skills, location }) {
 
 /**
  * Execute search using SerpAPI
+ * Searches each selected site individually to maximize results
  */
-export async function executeSearch({ sites, roles, statuses, skills, location, maxResults = 30 }) {
+export async function executeSearch({ sites, roles, statuses, skills, location }) {
   const apiKey = process.env.SERP_API_KEY;
-  
+
   if (!apiKey) {
     throw new Error('SERP_API_KEY is not configured. Add it to your .env file.');
   }
 
-  const query = buildSearchQuery({ sites, roles, statuses, skills, location });
-  console.log('🔍 Executing search:', query);
+  // Search each site separately for more results
+  const siteList = sites && sites.length > 0 ? sites : Object.keys(JOB_SITES);
+  const allJobs = [];
+  const seenUrls = new Set();
 
-  try {
-    const response = await getJson({
-      engine: 'google',
-      q: query,
-      api_key: apiKey,
-      num: Math.min(maxResults, 100), // Google max is 100
-      gl: 'us', // Geographic location
-      hl: 'en'  // Language
-    });
+  for (const siteId of siteList) {
+    const query = buildSearchQuery({ sites: [siteId], roles, statuses, skills, location });
+    console.log(`🔍 Searching ${siteId}:`, query);
 
-    if (!response.organic_results) {
-      console.log('No results found');
-      return [];
+    try {
+      const response = await getJson({
+        engine: 'google',
+        q: query,
+        api_key: apiKey,
+        num: 100,
+        gl: 'us',
+        hl: 'en'
+      });
+
+      if (response.organic_results) {
+        for (const result of response.organic_results) {
+          // Deduplicate by URL
+          if (!seenUrls.has(result.link)) {
+            seenUrls.add(result.link);
+            allJobs.push(transformSearchResult(result, { sites, roles, statuses, skills, query }));
+          }
+        }
+        console.log(`  ✅ ${siteId}: ${response.organic_results.length} results`);
+      } else {
+        console.log(`  ⚠️ ${siteId}: no results`);
+      }
+    } catch (error) {
+      console.error(`  ❌ ${siteId} error:`, error.message);
+      // Continue with other sites instead of failing completely
     }
-
-    // Transform results to our job format
-    const jobs = response.organic_results.map(result => transformSearchResult(result, { sites, roles, statuses, skills, query }));
-    
-    console.log(`✅ Found ${jobs.length} results`);
-    return jobs;
-
-  } catch (error) {
-    console.error('SerpAPI error:', error.message);
-    throw new Error(`Search failed: ${error.message}`);
   }
+
+  console.log(`✅ Total: ${allJobs.length} unique results across ${siteList.length} sites`);
+  return allJobs;
 }
 
 /**
@@ -349,7 +361,7 @@ export function generateMockResults({ sites, roles, statuses, skills }) {
   const companies = ['Acme Corp', 'TechStart', 'DataFlow', 'CloudNine', 'AIVentures', 'StartupXYZ', 'MegaTech', 'InnovateCo'];
   const locations = ['San Francisco, CA', 'Remote', 'New York, NY', 'Austin, TX', 'Seattle, WA', 'Boston, MA', 'Denver, CO', 'Hybrid'];
 
-  const numResults = Math.floor(Math.random() * 10) + 8; // 8-17 results
+  const numResults = Math.min(sites.length * 10, 80); // ~10 results per site selected
 
   for (let i = 0; i < numResults; i++) {
     const site = sites[Math.floor(Math.random() * sites.length)];

@@ -52,27 +52,26 @@ Before you begin, ensure you have the following installed:
 
 1.  **Configure Search:** Select your target Job Sites and enter Job Roles (e.g., "Cloud Architect").
     <p align="center">
-    <img src="website-imgs/job scrapper_1.png.png" width="700"/>
+    <img src="website-imgs/job scrapper_1.png" width="700"/>
     </p>
 2.  **Add Keywords:** Toggle keywords like **Hiring**, **Apply**, or **Remote**.
   <p align="center">
-    <img src="website-imgs/job scrapper_2.png.png" width="700"/>
+    <img src="website-imgs/job scrapper_2.png" width="700"/>
     </p>
 3.  **Advanced Filtering:** Use the "Advanced Search" section and click on the websites you'd like to retrieve job listings
   <p align="center">
-    <img src="website-imgs/job scrapper_3.png.png" width="700"/>
+    <img src="website-imgs/job scrapper_3.png" width="700"/>
     </p>
 
 4.  **Monitor:** Watch the real-time terminal logs for unique results across platforms.
   <p align="center">
-    <img src="website-imgs/job scrapper_4.png.png" width="700"/>
-    2.  **Add Keywords:** Toggle keywords like **Hiring**, **Apply**, or **Remote**.
+    <img src="website-imgs/job scrapper_4.png" width="700"/>
+    Serf API limits can be set at this time it performs 30 searches for 4 sites
   <p align="center">
-    <img src="website-imgs/job scrapper_5.png.png" width="700"/>
+    <img src="website-imgs/job scrapper_5..png" width="700"/>
     </p>
-    </p>
+    
 5.  **Export:** Review the UI results and hit **Download CSV** to save your leads.
-2.  **Add Keywords:** Toggle keywords like **Hiring**, **Apply**, or **Remote**.
   <p align="center">
     <img src="website-imgs/job scrapper_6.png.png" width="700"/>
     </p>

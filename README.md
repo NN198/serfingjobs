@@ -59,13 +59,15 @@ Before you begin, ensure you have the following installed:
     <img src="website-imgs/job scrapper_2.png" width="700"/>
     </p>
 3.  **Advanced Filtering:** Use the "Advanced Search" section and click on the websites you'd like to retrieve job listings
-  <p align="center">
+    <p align="center">
     <img src="website-imgs/job scrapper_3.png" width="700"/>
     </p>
 
 4.  **Monitor:** Watch the real-time terminal logs for unique results across platforms.
   <p align="center">
     <img src="website-imgs/job scrapper_4.png" width="700"/>
+    </p>
+    <br/>
     Serf API limits can be set at this time it performs 30 searches for 4 sites
   <p align="center">
     <img src="website-imgs/job scrapper_5.png" width="700"/>

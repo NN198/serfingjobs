@@ -68,12 +68,12 @@ Before you begin, ensure you have the following installed:
     <img src="website-imgs/job scrapper_4.png" width="700"/>
     Serf API limits can be set at this time it performs 30 searches for 4 sites
   <p align="center">
-    <img src="website-imgs/job scrapper_5..png" width="700"/>
+    <img src="website-imgs/job scrapper_5.png" width="700"/>
     </p>
     
 5.  **Export:** Review the UI results and hit **Download CSV** to save your leads.
   <p align="center">
-    <img src="website-imgs/job scrapper_6.png.png" width="700"/>
+    <img src="website-imgs/job scrapper_6.png" width="700"/>
     </p>
 
 ---

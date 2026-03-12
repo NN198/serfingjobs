@@ -89,8 +89,4 @@ Before you begin, ensure you have the following installed:
 * **Orchestration:** Docker Compose
 * **AI Collaborator:** Claude Code
 
----
 
-## 📄 License
-
-Distributed under the MIT License. See `LICENSE` for more information.
